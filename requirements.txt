@@ -1,0 +1,9 @@
+# runtime requirements
+numpy 
+scipy
+scikit-learn
+seaborn
+matplotlib
+typing
+copy
+pandas
