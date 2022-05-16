@@ -23,7 +23,7 @@ import scipy.spatial.distance
 dst = scipy.spatial.distance.euclidean
 import seaborn as sns
 
-class ClusterAnalyzer:
+class Optimal_K:
 
     def __init__(self, k_min = 1, k_max = 9) -> None:
         self.k_min = k_min
@@ -265,9 +265,7 @@ if __name__ == "__main__":
     # Combine the data to create the final dataset
     data = np.concatenate((data1,data2, data3, data4), axis = 0)
 
-
-    import main
-    analyzer = ClusterAnalyzer()
+    analyzer = Optimal_K()
     analyzer.fit(data)
     #analyzer.plot_elbow()
     #analyzer.plot_silhouette_coefs()
