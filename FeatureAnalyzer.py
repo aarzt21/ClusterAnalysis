@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import scipy
 from scipy import stats
+from matplotlib.backends.backend_pdf import PdfPages
 
 
 
@@ -28,16 +29,6 @@ class FeatureAnalyzer:
         self.model = model
 
     def _top_features_per_cluster(self, cluster, top=2) -> None:
-        """takes a certain cluster c as input, the computes the 2 Sample Kolomogorow-Smirnov
-            statistic for each feature of the cluster and the "rest", and plots the 
-            top features that have the largest test statistic; i.e. the top features
-            that are make cluster c differ from the other clusters
-
-        Args:
-            cluster (int): the cluster of interest
-            top (int): e.g. 5 would be the top 5 feautures
-        """
-
         ks_stats = []
         ks_pvals = []
         for feature in range(self.X.shape[1]):
@@ -46,12 +37,11 @@ class FeatureAnalyzer:
             rest = data[data[:,-1] != cluster, 0:-1]
             ks_stats.append(stats.ks_2samp(data1=ref[:,feature], data2=rest[:,feature])[0])
             ks_pvals.append(stats.ks_2samp(data1=ref[:,feature], data2=rest[:,feature])[1])
-        
+
         top_feats_idx = np.argsort(ks_stats)[-top:]
-
         plt.figure(figsize=(18,18))
-
         plot_idx = 1
+
         for feature in top_feats_idx:
             data = np.hstack([self.X, self.y.reshape((len(self.y),1))])
             ref = data[data[:,-1] == cluster, 0:-1]
@@ -68,36 +58,20 @@ class FeatureAnalyzer:
             plt.title("Feature " + str(feature))
             plt.annotate('KS-Test P-Value: ' + str(round(ks_pvals[feature],3)) , xy=(0.01, 1), xycoords='axes fraction', color='darkred')
             plot_idx += 1
+
         plt.show()
 
     def get_feature_analyis(self, top) -> None:
+        """takes a certain cluster c, computes the 2 Sample Kolomogorow-Smirnov
+            statistic for each feature of the cluster and the "rest", and plots the 
+            top features that have the largest test statistic; i.e. the top features
+            that make cluster c differ from the other clusters
+
+        Args:
+            top (int): e.g. 5 would be the top 5 feautures
+        """
         for cluster in np.unique(self.y):
             self._top_features_per_cluster(cluster=cluster, top=top)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
