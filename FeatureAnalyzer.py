@@ -49,22 +49,26 @@ class FeatureAnalyzer:
         
         top_feats_idx = np.argsort(ks_stats)[-top:]
 
+        plt.figure(figsize=(18,18))
+
+        plot_idx = 1
         for feature in top_feats_idx:
             data = np.hstack([self.X, self.y.reshape((len(self.y),1))])
             ref = data[data[:,-1] == cluster, 0:-1]
             rest = data[data[:,-1] != cluster, 0:-1]
             mean_ref = np.mean(ref[:,feature])
             mean_rest = np.mean(rest[:,feature])
-            sns.set_theme()
-            plt.figure()
+            sns.set_theme(style='dark')
+            plt.subplot(3, 3, plot_idx)
             plt.hist(ref[:,feature],density = True, bins = 20, alpha=0.9, color='violet', label= "Cluster "+str(cluster))
             plt.axvline(mean_ref, color='blue', alpha=1)
             plt.hist(rest[:,feature],density = True, bins = 20, alpha=0.4, color='grey', label = "Rest")
             plt.axvline(mean_rest, color='black', alpha=0.5)
             plt.legend()
             plt.title("Feature " + str(feature))
-            plt.annotate('KS-Test P-Value: ' + str(round(ks_pvals[feature],3)) , xy=(0.01, 1), xycoords='axes fraction', color='red')
-            plt.show()
+            plt.annotate('KS-Test P-Value: ' + str(round(ks_pvals[feature],3)) , xy=(0.01, 1), xycoords='axes fraction', color='darkred')
+            plot_idx += 1
+        plt.show()
 
     def get_feature_analyis(self, top) -> None:
         for cluster in np.unique(self.y):
@@ -100,7 +104,7 @@ class FeatureAnalyzer:
 
 
 
-
+# testing
     
 if __name__ == "__main__":
     from copy import deepcopy
@@ -134,4 +138,4 @@ if __name__ == "__main__":
     bla1 = bla[bla[:,-1]==1,:-1]
     bla2 = bla[bla[:,-1]!=1,:-1]
 
-    feat_analyzer.get_feature_analyis(top=1)
+    feat_analyzer.get_feature_analyis(top=3)
