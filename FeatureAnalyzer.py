@@ -27,37 +27,48 @@ class FeatureAnalyzer:
         self.y = labels
         self.model = model
 
-    def get_feature_analyis(self, feature, cluster) -> None:
-        data = np.hstack([self.X, self.y.reshape((len(self.y),1))])
-        ref = data[data[:,-1] == cluster, 0:-1]
-        rest = data[data[:,-1] != cluster, 0:-1]
-        mean_ref = np.mean(ref[:,feature])
-        mean_rest = np.mean(rest[:,feature])
-        tt_pval = stats.ttest_ind(ref[:,feature], rest[:,feature], equal_var=False)[1]
+    def _top_features_per_cluster(self, cluster, top=2) -> None:
+        """takes a certain cluster c as input, the computes the 2 Sample Kolomogorow-Smirnov
+            statistic for each feature of the cluster and the "rest", and plots the 
+            top features that have the largest test statistic; i.e. the top features
+            that are make cluster c differ from the other clusters
+
+        Args:
+            cluster (int): the cluster of interest
+            top (int): e.g. 5 would be the top 5 feautures
+        """
+
+        ks_stats = []
+        ks_pvals = []
+        for feature in range(self.X.shape[1]):
+            data = np.hstack([self.X, self.y.reshape((len(self.y),1))])
+            ref = data[data[:,-1] == cluster, 0:-1]
+            rest = data[data[:,-1] != cluster, 0:-1]
+            ks_stats.append(stats.ks_2samp(data1=ref[:,feature], data2=rest[:,feature])[0])
+            ks_pvals.append(stats.ks_2samp(data1=ref[:,feature], data2=rest[:,feature])[1])
         
-        sns.set_theme()
-        plt.figure()
-        plt.hist(ref[:,feature],density = True, bins = 20, alpha=0.9, color='violet', label= "Cluster "+str(cluster))
-        plt.axvline(mean_ref, color='blue', alpha=1)
-        plt.hist(rest[:,feature],density = True, bins = 20, alpha=0.4, color='grey', label = "Rest")
-        plt.axvline(mean_rest, color='black', alpha=0.5)
-        plt.legend()
-        plt.title("Feature " + str(feature))
-        plt.annotate('T-Test P-Value: ' + str(tt_pval) , xy=(0.01, 0.95), xycoords='axes fraction', color='red')
-        plt.show()
+        top_feats_idx = np.argsort(ks_stats)[-top:]
 
-        
+        for feature in top_feats_idx:
+            data = np.hstack([self.X, self.y.reshape((len(self.y),1))])
+            ref = data[data[:,-1] == cluster, 0:-1]
+            rest = data[data[:,-1] != cluster, 0:-1]
+            mean_ref = np.mean(ref[:,feature])
+            mean_rest = np.mean(rest[:,feature])
+            sns.set_theme()
+            plt.figure()
+            plt.hist(ref[:,feature],density = True, bins = 20, alpha=0.9, color='violet', label= "Cluster "+str(cluster))
+            plt.axvline(mean_ref, color='blue', alpha=1)
+            plt.hist(rest[:,feature],density = True, bins = 20, alpha=0.4, color='grey', label = "Rest")
+            plt.axvline(mean_rest, color='black', alpha=0.5)
+            plt.legend()
+            plt.title("Feature " + str(feature))
+            plt.annotate('KS-Test P-Value: ' + str(round(ks_pvals[feature],3)) , xy=(0.01, 1), xycoords='axes fraction', color='red')
+            plt.show()
 
-
-
-
-
-
-
-
-
-
-
+    def get_feature_analyis(self, top) -> None:
+        for cluster in np.unique(self.y):
+            self._top_features_per_cluster(cluster=cluster, top=top)
 
 
 
@@ -123,4 +134,4 @@ if __name__ == "__main__":
     bla1 = bla[bla[:,-1]==1,:-1]
     bla2 = bla[bla[:,-1]!=1,:-1]
 
-    feat_analyzer.get_feature_analyis(cluster=2, feature=0)
+    feat_analyzer.get_feature_analyis(top=1)
