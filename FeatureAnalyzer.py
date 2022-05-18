@@ -64,8 +64,8 @@ class FeatureAnalyzer:
             plt.hist(rest[:,feature],density = True, bins = 20, alpha=0.4, color='grey', label = "Rest")
             plt.axvline(mean_rest, color='black', alpha=0.5)
             plt.legend()
-            plt.title("Feature " + str(self.encoding[feature]))
-            plt.annotate('KS-Test P-Value: ' + str(round(ks_pvals[feature],3)) , xy=(0.01, 1), xycoords='axes fraction', color='darkred')
+            plt.title("Feature " + str(self.encoding[feature]), fontsize=11, loc='right',fontweight="bold")
+            plt.annotate('Kolmogorow Smirnoff P-Value: ' + str(round(ks_pvals[feature],3)) , xy=(0.01, 1.01), xycoords='axes fraction', color='darkblue', fontsize=10)
             plot_idx += 1
 
         plt.show()
@@ -96,8 +96,8 @@ class FeatureAnalyzer:
         sorted_idx = result.importances_mean.argsort()
         plt.barh([self.encoding[idx] for idx in sorted_idx], result.importances_mean[sorted_idx])
         plt.ylabel("Features")
-        plt.xlabel("Permutation Importance")
-        plt.title("Permutation Importance (Out Of Sample): Cluster " + str(cluster) + " vs. Rest")
+        plt.xlabel("Permutation Importance (Out Of Sample)")
+        plt.title("Cluster " + str(cluster) + " vs. Rest", fontweight='bold')
         plt.show()
 
     def rf_feature_analysis(self) -> None:
@@ -113,8 +113,6 @@ class FeatureAnalyzer:
 # testing
 if __name__ == "__main__":
     from copy import deepcopy
-    from ctypes.wintypes import MSG
-    from turtle import color
     import pandas as pd
     import numpy as np
     import matplotlib.pyplot as plt
