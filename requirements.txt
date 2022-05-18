@@ -7,3 +7,5 @@ matplotlib
 typing
 copy
 pandas
+hashlib
+typing
