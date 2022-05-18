@@ -16,7 +16,7 @@ class FeatureAnalyzer:
     def __init__(self) -> None:
         self.X = None
         self.y = None
-        self.model = None
+        self.encoding = None
 
     def fit(self, data, labels, encoding) -> None:
         """Fits the analyzer with the Clustered Data
@@ -26,6 +26,13 @@ class FeatureAnalyzer:
             labels (numpy.array): n x 1 array with the labels
             encoding (list[str]): the names of the features in the order they occur in data
         """
+        if not isinstance(data, np.ndarray):
+            raise TypeError("X must be of type numpy.ndarray!")
+        if not isinstance(encoding, list):
+            raise TypeError("Encoding must be a list of strings [the feature names]!")
+        if data.shape[1] != len(encoding):
+            raise ValueError("The number of columns in data does not match the number of names in encoding")
+        
         self.X = data
         self.y = labels
         self.encoding = encoding
@@ -89,7 +96,7 @@ class FeatureAnalyzer:
         sorted_idx = result.importances_mean.argsort()
         plt.barh([self.encoding[idx] for idx in sorted_idx], result.importances_mean[sorted_idx])
         plt.ylabel("Features")
-        plt.xlabel("Permutation Importance (scaled)")
+        plt.xlabel("Permutation Importance")
         plt.title("Permutation Importance (Out Of Sample): Cluster " + str(cluster) + " vs. Rest")
         plt.show()
 
@@ -129,7 +136,7 @@ if __name__ == "__main__":
     preds = KMeans(n_clusters=4).fit_predict(data)
 
     feat_analyzer = FeatureAnalyzer()
-    feat_analyzer.fit(data = data, labels = preds, encoding = ['A', 'B', 'C', 'D'])
+    feat_analyzer.fit(data = data, labels = preds, encoding = ['A', 'B', 'C'])
 
     bla = np.hstack([feat_analyzer.X, feat_analyzer.y.reshape((len(feat_analyzer.y),1))])
 
