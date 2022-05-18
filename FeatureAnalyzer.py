@@ -136,5 +136,5 @@ if __name__ == "__main__":
     bla1 = bla[bla[:,-1]==1,:-1]
     bla2 = bla[bla[:,-1]!=1,:-1]
 
-    feat_analyzer.ks_feature_analyis(top=3)
+    feat_analyzer.ks_feature_analyis(top=2)
     feat_analyzer.rf_feature_analysis()
