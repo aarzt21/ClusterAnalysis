@@ -24,7 +24,7 @@ class FeatureAnalyzer:
         Args:
             data (numpy.ndarray): n x p matrix with the feautures
             labels (numpy.array): n x 1 array with the labels
-            model (str): the name of the model use to produce the clustering
+            encoding (list[str]): the names of the features in the order they occur in data
         """
         self.X = data
         self.y = labels
